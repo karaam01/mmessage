@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MultiChat — комнаты с паролем</title>
+    <title>MultiChat — с комнатами и паролем</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app">
-        <!-- Боковая панель с комнатами -->
         <aside class="rooms-panel">
             <div class="logo">
                 <span class="logo-icon">💬</span>
                 <h2>MultiChat</h2>
             </div>
-            <div class="rooms-list" id="roomsList">
+            <div class="rooms-list">
                 <button class="room-btn" data-room="lobby">
                     <span class="room-icon">🌍</span> Лобби
                 </button>
@@ -30,16 +29,13 @@
             </div>
         </aside>
 
-        <!-- Основная область чата -->
         <main class="chat-area">
-            <div class="chat-header" id="chatHeader">
+            <div class="chat-header">
                 <span id="roomName">Лобби</span>
-                <span class="room-badge" id="roomBadge"></span>
+                <span class="room-badge" id="roomBadge">🌐 Открытая</span>
             </div>
             <div class="messages-container" id="messagesContainer">
-                <div class="welcome-message">
-                    ✨ Выберите комнату и начните общение ✨
-                </div>
+                <div class="welcome-message">✨ Выберите комнату и начните общение ✨</div>
             </div>
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
@@ -48,15 +44,14 @@
         </main>
     </div>
 
-    <!-- Модальное окно для пароля -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <span class="modal-icon">🔒</span>
                 <h3>Доступ в VIP-комнату</h3>
             </div>
-            <p>Введите пароль, чтобы присоединиться:</p>
-            <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+            <p>Введите пароль:</p>
+            <input type="password" id="passwordInput" placeholder="Пароль">
             <div class="modal-buttons">
                 <button id="passwordSubmit" class="btn-primary">Войти</button>
                 <button id="passwordCancel" class="btn-secondary">Отмена</button>
@@ -65,7 +60,6 @@
         </div>
     </div>
 
-    <!-- Подключение Firebase SDK и нашего скрипта -->
     <script type="importmap">
         {
             "imports": {
