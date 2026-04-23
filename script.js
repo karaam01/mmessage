@@ -11,11 +11,12 @@
 // ==========================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, serverTimestamp, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, serverTimestamp, query, limitToLast, off } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// Комнаты
 const rooms = {
     lobby: { name: "Лобби", needPassword: false },
     gaming: { name: "Игровая", needPassword: false },
@@ -24,6 +25,8 @@ const rooms = {
 
 let currentRoom = null;
 let privateUnlocked = false;
+let currentListenerRef = null; // текущая ссылка на ref для отписки
+let currentOffFunction = null;  // функция отписки
 
 // DOM
 const messagesContainer = document.getElementById("messagesContainer");
@@ -75,18 +78,39 @@ function addMessageToDOM(data, isSelf) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-function loadRoom(roomId) {
-    clearMessages();
-    const roomRef = ref(db, `messages/${roomId}`);
-    const limitedQuery = query(roomRef, limitToLast(100));
-    onChildAdded(limitedQuery, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            addMessageToDOM(data, data.name === usernameInput.value);
-        }
-    });
+// Отписка от старой комнаты
+function unsubscribeFromRoom() {
+    if (currentListenerRef && currentOffFunction) {
+        off(currentListenerRef, 'child_added', currentOffFunction);
+        console.log("Отписались от комнаты");
+    }
+    currentListenerRef = null;
+    currentOffFunction = null;
 }
 
+// Загрузка комнаты
+function loadRoom(roomId) {
+    unsubscribeFromRoom();
+    clearMessages();
+    
+    const roomPath = `messages/${roomId}`;
+    console.log(`Загружаем комнату: ${roomPath}`);
+    currentListenerRef = ref(db, roomPath);
+    const limitedQuery = query(currentListenerRef, limitToLast(100));
+    
+    // Подписываемся
+    const callback = (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            console.log(`Сообщение в ${roomId}:`, data.text);
+            addMessageToDOM(data, data.name === usernameInput.value);
+        }
+    };
+    onChildAdded(limitedQuery, callback);
+    currentOffFunction = callback;
+}
+
+// Отправка сообщения
 async function sendMessage() {
     if (!currentRoom) {
         alert("Выберите комнату");
@@ -101,6 +125,7 @@ async function sendMessage() {
     if (!name) name = "Аноним";
     if (!text) return;
 
+    console.log(`Отправляем в комнату ${currentRoom}: ${text}`);
     try {
         const roomRef = ref(db, `messages/${currentRoom}`);
         await push(roomRef, {
@@ -111,11 +136,12 @@ async function sendMessage() {
         messageInput.value = "";
         messageInput.focus();
     } catch (err) {
-        console.error(err);
+        console.error("Ошибка отправки:", err);
         alert("Ошибка: " + err.message);
     }
 }
 
+// Переключение комнаты
 function switchRoom(roomId) {
     if (roomId === currentRoom) return;
     if (roomId === 'vip' && !privateUnlocked) {
@@ -144,7 +170,7 @@ function checkPassword() {
     }
 }
 
-// Обработчики
+// Обработчики событий
 document.querySelectorAll('.room-btn').forEach(btn => {
     btn.addEventListener('click', () => switchRoom(btn.dataset.room));
 });
