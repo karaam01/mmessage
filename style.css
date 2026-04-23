@@ -5,54 +5,53 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #0e0f10;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 16px;
 }
 
 .app {
     display: flex;
-    width: 1200px;
-    max-width: 95vw;
-    height: 90vh;
-    background: rgba(255,255,255,0.95);
-    border-radius: 32px;
-    box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+    width: 1400px;
+    max-width: 98vw;
+    height: 96vh;
+    background: #1e1f22;
+    border-radius: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     overflow: hidden;
-    backdrop-filter: blur(2px);
 }
 
-/* ===== Боковая панель ===== */
+/* ===== SIDEBAR (как в Discord) ===== */
 .rooms-panel {
     width: 280px;
-    background: #2d2f3b;
-    color: #f0f0f0;
+    background: #111214;
     display: flex;
     flex-direction: column;
-    padding: 24px 16px;
-    border-radius: 32px 0 0 32px;
+    padding: 20px 12px;
+    border-right: 1px solid #2b2d31;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 40px;
-    padding-left: 8px;
+    padding: 0 8px;
+    margin-bottom: 32px;
 }
 
 .logo-icon {
     font-size: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .logo h2 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #fff, #a0a0ff);
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #5865f2, #eb459e);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -62,23 +61,23 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .room-btn {
-    background: rgba(255,255,255,0.08);
+    background: transparent;
     border: none;
-    padding: 14px 18px;
-    border-radius: 20px;
-    color: #e0e0e0;
-    font-size: 1rem;
+    padding: 12px 12px;
+    border-radius: 16px;
+    color: #dbdee1;
+    font-size: 0.95rem;
     font-weight: 500;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 .room-btn .room-icon {
@@ -86,137 +85,141 @@ body {
 }
 
 .room-btn:hover {
-    background: rgba(255,255,255,0.2);
-    transform: translateX(5px);
+    background: #2b2d31;
+    color: white;
 }
 
 .room-btn.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #3b3f45;
     color: white;
-    box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 .user-info {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #2b2d31;
 }
 
 #username {
     width: 100%;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: #1e1f22;
+    border: 1px solid #3b3f45;
     border-radius: 30px;
     padding: 12px 16px;
+    font-size: 0.85rem;
     color: white;
-    font-size: 0.9rem;
     outline: none;
     transition: 0.2s;
 }
 
 #username:focus {
-    background: rgba(255,255,255,0.2);
-    border-color: #a0a0ff;
+    border-color: #5865f2;
+    background: #2b2d31;
 }
 
 #username::placeholder {
-    color: #ccc;
+    color: #949ba4;
 }
 
-/* ===== Основной чат ===== */
+/* ===== MAIN CHAT (как Telegram) ===== */
 .chat-area {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #f8f9fc;
+    background: #1e1f22;
 }
 
 .chat-header {
-    background: white;
-    padding: 20px 28px;
-    border-bottom: 1px solid #e9ecef;
+    background: #1e1f22;
+    padding: 16px 24px;
+    border-bottom: 1px solid #2b2d31;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .chat-header #roomName {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #2d2f3b, #667eea);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #f2f3f5;
+    letter-spacing: -0.2px;
 }
 
 .room-badge {
-    background: #e9ecef;
-    padding: 6px 14px;
-    border-radius: 40px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #495057;
+    background: #2b2d31;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #b5bac1;
 }
 
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 28px;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: #f8f9fc;
+    background: #1e1f22;
 }
 
 .welcome-message {
     text-align: center;
-    color: #adb5bd;
-    margin-top: 40px;
-    font-size: 1.1rem;
+    color: #6d7278;
+    margin-top: 60px;
+    font-size: 1rem;
 }
 
+/* Пузырьки сообщений (Telegram-стиль) */
 .message {
-    max-width: 75%;
-    padding: 10px 16px;
+    max-width: 70%;
+    padding: 8px 14px;
     border-radius: 24px;
     position: relative;
     word-wrap: break-word;
-    animation: fadeIn 0.2s ease;
+    animation: fadeInUp 0.2s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px);}
-    to { opacity: 1; transform: translateY(0);}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .message-self {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #5865f2;
     color: white;
     align-self: flex-end;
-    border-bottom-right-radius: 6px;
+    border-bottom-right-radius: 8px;
 }
 
 .message-other {
-    background: white;
-    color: #1e1e2a;
+    background: #2b2d31;
+    color: #dbdee1;
     align-self: flex-start;
-    border-bottom-left-radius: 6px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    border-bottom-left-radius: 8px;
 }
 
 .message-name {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.75rem;
-    margin-bottom: 4px;
-    opacity: 0.8;
+    margin-bottom: 5px;
+    opacity: 0.9;
 }
 
 .message-self .message-name {
-    color: rgba(255,255,255,0.9);
+    color: #c4c9ff;
 }
 
 .message-other .message-name {
-    color: #667eea;
+    color: #a6b0c0;
 }
 
 .message-text {
@@ -228,13 +231,14 @@ body {
     font-size: 0.65rem;
     text-align: right;
     margin-top: 6px;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
+/* Поле ввода (Telegram-стиль) */
 .input-area {
-    background: white;
-    padding: 16px 28px;
-    border-top: 1px solid #e9ecef;
+    background: #1e1f22;
+    padding: 16px 24px;
+    border-top: 1px solid #2b2d31;
     display: flex;
     gap: 12px;
     align-items: center;
@@ -242,39 +246,45 @@ body {
 
 #messageInput {
     flex: 1;
-    padding: 14px 20px;
-    border: 1px solid #dee2e6;
-    border-radius: 40px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 30px;
     font-size: 0.95rem;
     outline: none;
+    background: #2b2d31;
+    color: white;
     transition: 0.2s;
 }
 
 #messageInput:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+    background: #383a40;
+}
+
+#messageInput::placeholder {
+    color: #7e848c;
 }
 
 #sendBtn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #5865f2;
     border: none;
-    padding: 12px 28px;
-    border-radius: 40px;
+    padding: 10px 24px;
+    border-radius: 30px;
     color: white;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 #sendBtn:hover {
+    background: #4752c4;
     transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(102,126,234,0.4);
 }
 
-/* ===== Модальное окно ===== */
+/* ===== Модальное окно (красивое) ===== */
 .modal {
     display: none;
     position: fixed;
@@ -282,125 +292,164 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
     justify-content: center;
     align-items: center;
     z-index: 2000;
 }
 
 .modal-content {
-    background: white;
-    border-radius: 32px;
-    width: 340px;
-    padding: 28px;
+    background: #1e1f22;
+    border-radius: 28px;
+    width: 360px;
+    padding: 32px;
     text-align: center;
-    animation: modalPop 0.2s ease;
+    animation: modalZoom 0.2s ease;
+    border: 1px solid #3b3f45;
 }
 
-@keyframes modalPop {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+@keyframes modalZoom {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
 .modal-icon {
-    font-size: 32px;
+    font-size: 36px;
 }
 
 .modal-content h3 {
     font-size: 1.5rem;
-    color: #2d2f3b;
+    color: #f2f3f5;
 }
 
 .modal-content p {
     margin: 16px 0;
-    color: #6c757d;
+    color: #b5bac1;
 }
 
 #passwordInput {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 40px;
-    margin: 10px 0;
+    padding: 14px;
+    border: 1px solid #3b3f45;
+    border-radius: 30px;
+    background: #2b2d31;
+    color: white;
     font-size: 1rem;
+    outline: none;
+    margin: 10px 0;
+}
+
+#passwordInput:focus {
+    border-color: #5865f2;
 }
 
 .modal-buttons {
     display: flex;
     gap: 12px;
-    margin: 20px 0 10px;
+    margin-top: 20px;
 }
 
 .btn-primary, .btn-secondary {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-radius: 40px;
+    border-radius: 30px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #5865f2;
     color: white;
 }
 
+.btn-primary:hover {
+    background: #4752c4;
+}
+
 .btn-secondary {
-    background: #e9ecef;
-    color: #495057;
+    background: #2b2d31;
+    color: #dbdee1;
+}
+
+.btn-secondary:hover {
+    background: #3b3f45;
 }
 
 .error-message {
-    color: #e74c3c;
+    color: #ed4245;
     font-size: 0.8rem;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
-/* Адаптивность */
+/* ===== Адаптивность ===== */
 @media (max-width: 700px) {
+    body {
+        padding: 0;
+    }
     .app {
         flex-direction: column;
-        height: 95vh;
-        border-radius: 24px;
+        height: 100vh;
+        width: 100%;
+        border-radius: 0;
     }
     .rooms-panel {
         width: 100%;
-        border-radius: 24px 24px 0 0;
         flex-direction: row;
         flex-wrap: wrap;
-        padding: 16px;
-        gap: 16px;
+        gap: 12px;
+        padding: 14px;
+        border-right: none;
+        border-bottom: 1px solid #2b2d31;
+    }
+    .logo {
+        margin-bottom: 0;
+        width: auto;
     }
     .rooms-list {
         flex-direction: row;
         order: 2;
-        width: 100%;
+        flex: 1;
+        gap: 8px;
+        overflow-x: auto;
     }
     .room-btn {
-        flex: 1;
-        justify-content: center;
-    }
-    .logo {
-        order: 1;
-        margin-bottom: 0;
-        width: auto;
+        white-space: nowrap;
+        padding: 8px 16px;
     }
     .user-info {
         order: 3;
         margin-top: 0;
-        width: 100%;
+        padding-top: 0;
+        border: none;
+        width: auto;
     }
     .message {
-        max-width: 90%;
+        max-width: 85%;
+    }
+    .chat-header {
+        padding: 12px 20px;
+    }
+    .messages-container {
+        padding: 16px;
+    }
+    .input-area {
+        padding: 12px 16px;
     }
 }
