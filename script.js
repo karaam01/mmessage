@@ -1,4 +1,4 @@
-// ========== ВСТАВЬ СВОЙ КОНФИГ FIREBASE ==========
+// ========== ТВОЙ КОНФИГ FIREBASE ==========
   const firebaseConfig = {
     apiKey: "AIzaSyAapgTOCdUqvzmXT782oYEwcWvTfqEVY8g",
     authDomain: "mmesage-c85d1.firebaseapp.com",
@@ -8,9 +8,9 @@
     messagingSenderId: "760081596830",
     appId: "1:760081596830:web:fbe27db8bff147b159d68f"
   };
-// ================================================
+// ==========================================
 
-import { initializeApp } from "firebase/app";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getDatabase, 
     ref, 
@@ -20,26 +20,24 @@ import {
     query, 
     limitToLast,
     off
-} from "firebase/database";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Инициализация
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Список комнат
-const ROOMS = {
+// Комнаты
+const rooms = {
     lobby: { name: "Лобби", needPassword: false },
     gaming: { name: "Игровая", needPassword: false },
     vip: { name: "VIP", needPassword: true, password: "vip2024" }
 };
 
-// Состояние
-let currentRoomId = "lobby";
-let isVipUnlocked = false;
-let currentMessagesRef = null;
-let currentMessagesCallback = null;
+let currentRoom = null;
+let privateUnlocked = false;
+let currentRef = null;          // активная ссылка на ref
+let currentCallback = null;     // активный callback для отписки
 
-// DOM элементы
+// DOM
 const messagesContainer = document.getElementById("messagesContainer");
 const usernameInput = document.getElementById("username");
 const messageInput = document.getElementById("messageInput");
@@ -47,14 +45,14 @@ const sendBtn = document.getElementById("sendBtn");
 const roomNameSpan = document.getElementById("roomName");
 const roomBadge = document.getElementById("roomBadge");
 
-// Модальное окно
+// Модалка
 const modal = document.getElementById("passwordModal");
 const passwordInput = document.getElementById("passwordInput");
 const passwordSubmit = document.getElementById("passwordSubmit");
 const passwordCancel = document.getElementById("passwordCancel");
 const passwordError = document.getElementById("passwordError");
 
-let pendingRoomId = null;
+let pendingRoom = null;
 
 // Сохранение имени
 if (localStorage.getItem("chatUsername")) {
@@ -64,102 +62,86 @@ usernameInput.addEventListener("change", () => {
     localStorage.setItem("chatUsername", usernameInput.value);
 });
 
-// Утилита для экранирования HTML
+// Экранирование
 function escapeHtml(str) {
     if (!str) return "";
-    return str.replace(/[&<>]/g, (m) => {
-        if (m === "&") return "&amp;";
-        if (m === "<") return "&lt;";
-        if (m === ">") return "&gt;";
-        return m;
-    });
+    return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
 }
 
-// Очистка области сообщений
-function clearMessagesArea() {
+// Очистка окна сообщений
+function clearMessages() {
     messagesContainer.innerHTML = '<div class="welcome-message">✨ Выберите комнату и начните общение ✨</div>';
 }
 
 // Добавление сообщения в DOM
-function addMessageToDom(messageData, isFromCurrentUser) {
-    // Удаляем приветственное сообщение, если оно есть
+function addMessageToDOM(data, isSelf) {
     if (messagesContainer.children.length === 1 && 
         messagesContainer.children[0].classList?.contains("welcome-message")) {
         messagesContainer.innerHTML = "";
     }
-    
-    const messageDiv = document.createElement("div");
-    messageDiv.className = `message ${isFromCurrentUser ? "message-self" : "message-other"}`;
-    
-    const time = messageData.timestamp ? new Date(messageData.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
-    
-    messageDiv.innerHTML = `
-        <div class="message-name">${escapeHtml(messageData.name || "Аноним")}</div>
-        <div class="message-text">${escapeHtml(messageData.text)}</div>
+    const div = document.createElement("div");
+    div.className = `message ${isSelf ? "message-self" : "message-other"}`;
+    const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+    div.innerHTML = `
+        <div class="message-name">${escapeHtml(data.name || "Аноним")}</div>
+        <div class="message-text">${escapeHtml(data.text)}</div>
         <div class="message-time">${time}</div>
     `;
-    
-    messagesContainer.appendChild(messageDiv);
+    messagesContainer.appendChild(div);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Отписка от текущей комнаты
-function unsubscribeFromCurrentRoom() {
-    if (currentMessagesRef && currentMessagesCallback) {
-        off(currentMessagesRef, "child_added", currentMessagesCallback);
-        console.log("Отписались от комнаты");
-        currentMessagesRef = null;
-        currentMessagesCallback = null;
+// Отписка от предыдущей комнаты
+function unsubscribe() {
+    if (currentRef && currentCallback) {
+        off(currentRef, "child_added", currentCallback);
+        console.log("Отписались от старой комнаты");
+        currentRef = null;
+        currentCallback = null;
     }
 }
 
-// Загрузка сообщений комнаты
-function loadMessagesForRoom(roomId) {
-    unsubscribeFromCurrentRoom();
-    clearMessagesArea();
+// Загрузка комнаты
+function loadRoom(roomId) {
+    unsubscribe();              // отписываемся от старой
+    clearMessages();           // чистим экран
     
     const roomPath = `messages/${roomId}`;
-    console.log(`Подключаемся к ${roomPath}`);
-    currentMessagesRef = ref(db, roomPath);
-    const messagesQuery = query(currentMessagesRef, limitToLast(100));
+    console.log(`Загружаем комнату: ${roomPath}`);
+    currentRef = ref(db, roomPath);
+    const limitedQuery = query(currentRef, limitToLast(100));
     
-    currentMessagesCallback = (snapshot) => {
-        const msg = snapshot.val();
-        if (msg) {
-            const isSelf = (msg.name === usernameInput.value);
-            addMessageToDom(msg, isSelf);
+    currentCallback = (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const isSelf = (data.name === usernameInput.value);
+            addMessageToDOM(data, isSelf);
         }
     };
     
-    onChildAdded(messagesQuery, currentMessagesCallback);
+    onChildAdded(limitedQuery, currentCallback);
 }
 
 // Отправка сообщения
 async function sendMessage() {
-    // Проверка, что выбрана комната
-    if (!currentRoomId) {
-        alert("Сначала выберите комнату");
+    if (!currentRoom) {
+        alert("Выберите комнату");
         return;
     }
-    
-    // Проверка доступа к VIP
-    if (currentRoomId === "vip" && !isVipUnlocked) {
+    if (currentRoom === 'vip' && !privateUnlocked) {
         alert("VIP-комната заблокирована. Нажмите на кнопку VIP и введите пароль.");
         return;
     }
-    
     let name = usernameInput.value.trim();
-    if (!name) name = "Аноним";
-    
     const text = messageInput.value.trim();
+    if (!name) name = "Аноним";
     if (!text) return;
     if (text.length > 500) {
-        alert("Сообщение слишком длинное (макс 500 символов)");
+        alert("Сообщение слишком длинное");
         return;
     }
-    
     try {
-        const roomRef = ref(db, `messages/${currentRoomId}`);
+        const roomRef = ref(db, `messages/${currentRoom}`);
         await push(roomRef, {
             name: name,
             text: text,
@@ -167,81 +149,66 @@ async function sendMessage() {
         });
         messageInput.value = "";
         messageInput.focus();
-        console.log(`Сообщение отправлено в ${currentRoomId}`);
     } catch (error) {
-        console.error("Ошибка отправки:", error);
-        alert("Ошибка отправки: " + error.message + "\nПроверьте правила Firebase.");
+        console.error("Ошибка:", error);
+        alert("Ошибка: " + error.message);
     }
 }
 
 // Переключение комнаты
-function switchToRoom(roomId) {
-    if (roomId === currentRoomId) return;
-    
-    // Если пытаемся войти в VIP без разблокировки
-    if (roomId === "vip" && !isVipUnlocked) {
-        pendingRoomId = roomId;
-        modal.style.display = "flex";
+function switchRoom(roomId) {
+    if (roomId === currentRoom) return;
+    if (roomId === 'vip' && !privateUnlocked) {
+        pendingRoom = roomId;
+        modal.style.display = 'flex';
         passwordInput.value = "";
         passwordError.innerText = "";
         return;
     }
+    currentRoom = roomId;
+    roomNameSpan.textContent = rooms[roomId].name;
+    roomBadge.textContent = rooms[roomId].needPassword ? "🔒 Приватная" : "🌐 Открытая";
     
-    // Переключаемся
-    currentRoomId = roomId;
-    roomNameSpan.textContent = ROOMS[roomId].name;
-    roomBadge.textContent = ROOMS[roomId].needPassword ? "🔒 Приватная" : "🌐 Открытая";
-    
-    // Обновляем активную кнопку
-    document.querySelectorAll(".room-btn").forEach(btn => {
-        if (btn.dataset.room === roomId) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
+    // Активная кнопка
+    document.querySelectorAll('.room-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.room === roomId);
     });
     
-    loadMessagesForRoom(roomId);
+    loadRoom(roomId);
 }
 
 // Проверка пароля
-function checkVipPassword() {
-    const enteredPassword = passwordInput.value;
-    if (enteredPassword === ROOMS.vip.password) {
-        isVipUnlocked = true;
-        modal.style.display = "none";
-        if (pendingRoomId === "vip") {
-            switchToRoom("vip");
+function checkPassword() {
+    if (passwordInput.value === rooms.vip.password) {
+        privateUnlocked = true;
+        modal.style.display = 'none';
+        if (pendingRoom === 'vip') {
+            switchRoom('vip');
         }
-        pendingRoomId = null;
+        pendingRoom = null;
     } else {
         passwordError.innerText = "Неверный пароль!";
     }
 }
 
-// Закрытие модалки
-function closeModal() {
-    modal.style.display = "none";
-    pendingRoomId = null;
+function hideModal() {
+    modal.style.display = 'none';
+    pendingRoom = null;
 }
 
-// Обработчики событий
-document.querySelectorAll(".room-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        switchToRoom(btn.dataset.room);
-    });
+// Обработчики
+document.querySelectorAll('.room-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchRoom(btn.dataset.room));
+});
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+passwordSubmit.addEventListener('click', checkPassword);
+passwordCancel.addEventListener('click', hideModal);
+window.addEventListener('click', (e) => {
+    if (e.target === modal) hideModal();
 });
 
-sendBtn.addEventListener("click", sendMessage);
-messageInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-});
-
-passwordSubmit.addEventListener("click", checkVipPassword);
-passwordCancel.addEventListener("click", closeModal);
-window.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-});
-
-// Запускаем с комнатой "lobby"
-switchToRoom("lobby");
+// Старт с лобби
+switchRoom('lobby');
