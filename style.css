@@ -1,0 +1,406 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.app {
+    display: flex;
+    width: 1200px;
+    max-width: 95vw;
+    height: 90vh;
+    background: rgba(255,255,255,0.95);
+    border-radius: 32px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+    overflow: hidden;
+    backdrop-filter: blur(2px);
+}
+
+/* ===== Боковая панель ===== */
+.rooms-panel {
+    width: 280px;
+    background: #2d2f3b;
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    border-radius: 32px 0 0 32px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    padding-left: 8px;
+}
+
+.logo-icon {
+    font-size: 32px;
+}
+
+.logo h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #fff, #a0a0ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.rooms-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.room-btn {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    padding: 14px 18px;
+    border-radius: 20px;
+    color: #e0e0e0;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.room-btn .room-icon {
+    font-size: 1.4rem;
+}
+
+.room-btn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+.room-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+}
+
+.user-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+#username {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.2s;
+}
+
+#username:focus {
+    background: rgba(255,255,255,0.2);
+    border-color: #a0a0ff;
+}
+
+#username::placeholder {
+    color: #ccc;
+}
+
+/* ===== Основной чат ===== */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fc;
+}
+
+.chat-header {
+    background: white;
+    padding: 20px 28px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header #roomName {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2d2f3b, #667eea);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.room-badge {
+    background: #e9ecef;
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8f9fc;
+}
+
+.welcome-message {
+    text-align: center;
+    color: #adb5bd;
+    margin-top: 40px;
+    font-size: 1.1rem;
+}
+
+.message {
+    max-width: 75%;
+    padding: 10px 16px;
+    border-radius: 24px;
+    position: relative;
+    word-wrap: break-word;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+.message-self {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+}
+
+.message-other {
+    background: white;
+    color: #1e1e2a;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.message-name {
+    font-weight: 700;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.message-self .message-name {
+    color: rgba(255,255,255,0.9);
+}
+
+.message-other .message-name {
+    color: #667eea;
+}
+
+.message-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.message-time {
+    font-size: 0.65rem;
+    text-align: right;
+    margin-top: 6px;
+    opacity: 0.7;
+}
+
+.input-area {
+    background: white;
+    padding: 16px 28px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 14px 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 40px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.2s;
+}
+
+#messageInput:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+}
+
+#sendBtn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#sendBtn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+}
+
+/* ===== Модальное окно ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 32px;
+    width: 340px;
+    padding: 28px;
+    text-align: center;
+    animation: modalPop 0.2s ease;
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-icon {
+    font-size: 32px;
+}
+
+.modal-content h3 {
+    font-size: 1.5rem;
+    color: #2d2f3b;
+}
+
+.modal-content p {
+    margin: 16px 0;
+    color: #6c757d;
+}
+
+#passwordInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 40px;
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 10px;
+}
+
+.btn-primary, .btn-secondary {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 10px;
+}
+
+/* Адаптивность */
+@media (max-width: 700px) {
+    .app {
+        flex-direction: column;
+        height: 95vh;
+        border-radius: 24px;
+    }
+    .rooms-panel {
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 16px;
+        gap: 16px;
+    }
+    .rooms-list {
+        flex-direction: row;
+        order: 2;
+        width: 100%;
+    }
+    .room-btn {
+        flex: 1;
+        justify-content: center;
+    }
+    .logo {
+        order: 1;
+        margin-bottom: 0;
+        width: auto;
+    }
+    .user-info {
+        order: 3;
+        margin-top: 0;
+        width: 100%;
+    }
+    .message {
+        max-width: 90%;
+    }
+}

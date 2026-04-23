@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MultiChat — комнаты с паролем</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Боковая панель с комнатами -->
+        <aside class="rooms-panel">
+            <div class="logo">
+                <span class="logo-icon">💬</span>
+                <h2>MultiChat</h2>
+            </div>
+            <div class="rooms-list" id="roomsList">
+                <button class="room-btn" data-room="lobby">
+                    <span class="room-icon">🌍</span> Лобби
+                </button>
+                <button class="room-btn" data-room="gaming">
+                    <span class="room-icon">🎮</span> Игровая
+                </button>
+                <button class="room-btn" data-room="vip">
+                    <span class="room-icon">👑</span> VIP (пароль)
+                </button>
+            </div>
+            <div class="user-info">
+                <input type="text" id="username" placeholder="Ваше имя" maxlength="20">
+            </div>
+        </aside>
+
+        <!-- Основная область чата -->
+        <main class="chat-area">
+            <div class="chat-header" id="chatHeader">
+                <span id="roomName">Лобби</span>
+                <span class="room-badge" id="roomBadge"></span>
+            </div>
+            <div class="messages-container" id="messagesContainer">
+                <div class="welcome-message">
+                    ✨ Выберите комнату и начните общение ✨
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
+                <button id="sendBtn">📤 Отправить</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальное окно для пароля -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-icon">🔒</span>
+                <h3>Доступ в VIP-комнату</h3>
+            </div>
+            <p>Введите пароль, чтобы присоединиться:</p>
+            <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+            <div class="modal-buttons">
+                <button id="passwordSubmit" class="btn-primary">Войти</button>
+                <button id="passwordCancel" class="btn-secondary">Отмена</button>
+            </div>
+            <div id="passwordError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Подключение Firebase SDK и нашего скрипта -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"
+            }
+        }
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
